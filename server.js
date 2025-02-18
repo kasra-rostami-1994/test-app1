@@ -44,3 +44,4 @@ app.get('/check-db-connection', (req, res) => {
     res.json({ status: 'error' });
   }
 });
+
