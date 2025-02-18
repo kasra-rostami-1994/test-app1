@@ -34,3 +34,13 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+
+app.get('/check-db-connection', (req, res) => {
+  console.log('Check DB Connection route hit!');
+  if (mongoose.connection.readyState === 1) {
+    res.json({ status: 'success' });
+  } else {
+    res.json({ status: 'error' });
+  }
+});
