@@ -1,5 +1,29 @@
 {
   "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.13.0",
+    "mongoose": "^8.10.1",
     "node": "^23.8.0"
-  }
+  },
+  "name": "test-app1",
+  "version": "1.0.0",
+  "description": "just testing deployment",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kasra-rostami-1994/test-app1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kasra-rostami-1994/test-app1/issues"
+  },
+  "homepage": "https://github.com/kasra-rostami-1994/test-app1#readme"
 }
