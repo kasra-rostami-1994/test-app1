@@ -1,17 +1,11 @@
-const express = require('express');
-const path = require('path');
-const app = express();
-const port = 5000;
+const mongoose = require('mongoose');
 
-// تنظیمات مربوط به ارسال فایل‌های استاتیک (HTML، CSS، JS)
-app.use(express.static(path.join(__dirname, 'public')));
+const dbURI = 'mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
-// مسیر اصلی که صفحه index.html را نمایش می‌دهد
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// راه‌اندازی سرور
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err);
+  });
