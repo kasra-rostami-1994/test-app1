@@ -1,4 +1,4 @@
-fetch('/check-db-connection')
+fetch('https://www.kasrarostami.ir/check-db-connection')
   .then(response => response.json())
   .then(data => {
     const messageElement = document.getElementById('message');
