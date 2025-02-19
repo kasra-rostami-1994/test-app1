@@ -6,6 +6,29 @@ const Data = require('./models/Data'); // مدل داده
 const app = express();
 const port = process.env.PORT || 3000;
 
+
+// وارد کردن پکیج‌ها
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
+// استفاده از cors برای اجازه دادن به درخواست‌ها از منابع مختلف
+app.use(cors());
+
+// سایر middlewareها و روت‌ها
+app.use(express.json());  // برای پردازش JSON
+app.get('/', (req, res) => {
+    res.send('Hello World');
+});
+
+// سرور را روی پورت مشخص شده شروع می‌کنیم
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+});
+
+
+
 // استفاده از express.json برای پردازش درخواست‌های JSON
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
