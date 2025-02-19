@@ -1,7 +1,6 @@
 const express = require('express');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const bodyParser = require('body-parser');
-const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -43,7 +42,17 @@ app.get('/', async (req, res) => {
 
     // نمایش کاربران قبلی
     users.forEach(user => {
-      html += `<hr><li>Name: ${user.name}<br>Email: ${user.email}</li>`;
+      html += `
+        <hr>
+        <li>Name: ${user.name}<br>Email: ${user.email}
+          <form action="/delete/${user._id}" method="POST" style="display:inline;">
+            <button type="submit">Delete</button>
+          </form>
+          <form action="/edit/${user._id}" method="GET" style="display:inline;">
+            <button type="submit">Edit</button>
+          </form>
+        </li>
+      `;
     });
 
     html += '</ul>';
@@ -74,6 +83,80 @@ app.post('/submit', async (req, res) => {
   }
 });
 
+// حذف کاربر
+app.post('/delete/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // تبدیل شناسه به ObjectId
+    const result = await db.collection('users').deleteOne({ _id: new ObjectId(userId) });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).send('User not found');
+    }
+
+    // پس از حذف، به صفحه اصلی برگشت
+    res.redirect('/');
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// ویرایش کاربر (اختیاری)
+app.get('/edit/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    let html = `
+      <form action="/update/${user._id}" method="POST">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" value="${user.name}" required><br><br>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" value="${user.email}" required><br><br>
+        <input type="submit" value="Update">
+      </form>
+    `;
+    res.send(html);
+  } catch (error) {
+    console.error('Error fetching user for editing:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// به‌روزرسانی کاربر (اختیاری)
+app.post('/update/:id', async (req, res) => {
+  const userId = req.params.id;
+  const { name, email } = req.body;
+
+  if (!name || !email) {
+    return res.status(400).send('Name and Email are required!');
+  }
+
+  try {
+    const result = await db.collection('users').updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: { name, email } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).send('User not found or no changes made');
+    }
+
+    res.redirect('/');
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// شروع سرور
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
