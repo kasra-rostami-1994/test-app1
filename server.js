@@ -49,11 +49,11 @@ app.listen(port, () => {
 });
 
 
-const cors = require('cors');
+// const cors = require('cors');
 
-// استفاده از CORS
-app.use(cors({
-  origin: 'https://www.kasrarostami.ir', // آدرس سایت اصلی شما
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
-}));
+// // استفاده از CORS
+// app.use(cors({
+//   origin: 'https://www.kasrarostami.ir', // آدرس سایت اصلی شما
+//   methods: ['GET', 'POST'],
+//   allowedHeaders: ['Content-Type']
+// }));
