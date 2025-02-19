@@ -8,8 +8,12 @@
     ],
     "routes": [
       {
+        "src": "/submit",
+        "dest": "/submit"
+      },
+      {
         "src": "/(.*)",
-        "dest": "/index.js"
+        "dest": "/"
       }
     ]
   }

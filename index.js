@@ -1,77 +1,78 @@
 const express = require('express');
+const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
-const fs = require('fs');
 const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// تنظیمات bodyParser برای پردازش داده‌های فرم
+// MongoDB URI and database connection
+const uri = "mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/";
+const dbName = "userDatabase";
+let db;
+
+// متصل شدن به MongoDB
+MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(client => {
+    db = client.db(dbName);
+    console.log('Connected to MongoDB');
+  })
+  .catch(error => {
+    console.error('Error connecting to MongoDB:', error);
+  });
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// مسیر برای نمایش فرم
-app.get('/', (req, res) => {
-  // خواندن داده‌ها از فایل متنی
-  const users = readUsersFromFile();
-  
-  let html = `
-    <form action="/submit" method="POST">
-      <label for="name">Name:</label><br>
-      <input type="text" id="name" name="name" required><br><br>
-      <label for="email">Email:</label><br>
-      <input type="email" id="email" name="email" required><br><br>
-      <input type="submit" value="Submit">
-    </form>
-    <h3>Previous Users:</h3>
-    <ul>
-  `;
-  
-  // نمایش کاربران قبلی از فایل
-  users.forEach(user => {
-    html += `<li>Name: ${user.name}, Email: ${user.email}</li>`;
-  });
-  
-  html += '</ul>';
-  res.send(html);
+// صفحه اصلی
+app.get('/', async (req, res) => {
+  try {
+    // خواندن اطلاعات کاربران از دیتابیس
+    const users = await db.collection('users').find().toArray();
+    let html = `
+      <form action="/submit" method="POST">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+        <input type="submit" value="Submit">
+      </form>
+      <h3>Previous Users:</h3>
+      <ul>
+    `;
+
+    // نمایش کاربران قبلی
+    users.forEach(user => {
+      html += `<li>Name: ${user.name}, Email: ${user.email}</li>`;
+    });
+
+    html += '</ul>';
+    res.send(html);
+  } catch (error) {
+    console.error('Error reading from database:', error);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
-// مسیر برای دریافت داده‌های فرم و ذخیره در فایل متنی
-app.post('/submit', (req, res) => {
+// ارسال اطلاعات فرم و ذخیره در دیتابیس
+app.post('/submit', async (req, res) => {
   const { name, email } = req.body;
 
-  // ذخیره اطلاعات جدید در فایل متنی
-  const users = readUsersFromFile();
-  users.push({ name, email });
-
-  writeUsersToFile(users);
-
-  // پس از ذخیره، به صفحه اصلی برگشت
-  res.redirect('/');
-});
-
-// خواندن داده‌ها از فایل نوت‌متنی
-function readUsersFromFile() {
-  const filePath = path.join(__dirname, 'users.txt');
-  let users = [];
-
-  if (fs.existsSync(filePath)) {
-    const data = fs.readFileSync(filePath, 'utf-8');
-    users = data.split('\n').filter(Boolean).map(line => {
-      const [name, email] = line.split(',');
-      return { name, email };
-    });
+  if (!name || !email) {
+    return res.status(400).send('Name and Email are required!');
   }
 
-  return users;
-}
+  try {
+    // ذخیره اطلاعات جدید در دیتابیس
+    await db.collection('users').insertOne({ name, email });
 
-// نوشتن داده‌ها به فایل نوت‌متنی
-function writeUsersToFile(users) {
-  const filePath = path.join(__dirname, 'users.txt');
-  const data = users.map(user => `${user.name},${user.email}`).join('\n');
-  fs.writeFileSync(filePath, data, 'utf-8');
-}
+    // پس از ذخیره، به صفحه اصلی برگشت
+    res.redirect('/');
+  } catch (error) {
+    console.error('Error saving to database:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
