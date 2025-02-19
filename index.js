@@ -2,55 +2,42 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 
-
-console.log("Server is running...");
-
-
-mongoose.connect('mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/userdb')
-    .then(() => {
-        console.log('MongoDB connected');
-    })
-    .catch(err => {
-        console.log('Error connecting to MongoDB:', err);
-    });
-
-    mongoose.connection.on('connected', () => {
-        console.log('Mongoose is connected to the database');
-    });
-    
-    mongoose.connection.on('error', (err) => {
-        console.log('Mongoose connection error:', err);
-    });
-    
-    mongoose.connection.on('disconnected', () => {
-        console.log('Mongoose is disconnected');
-    });
-
-// مسیر روت اصلی
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
+// اتصال به دیتابیس MongoDB
+mongoose.connect('mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/userdb', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => {
+    console.log('MongoDB connected');
+})
+.catch((err) => {
+    console.log('Error connecting to MongoDB:', err);
 });
 
+// تعریف اسکیما و مدل User
 const UserSchema = new mongoose.Schema({
     name: String,
     age: Number
 });
 
-const UserModel = mongoose.model("emp", UserSchema);
+const UserModel = mongoose.model('User', UserSchema);
 
-// استفاده از متغیر محیطی برای پورت
-const port = process.env.PORT || 3000;
+// تنظیمات نمایش داده‌ها در صفحه
+app.set('view engine', 'ejs');  // استفاده از موتور نمایش ejs
+app.set('views', './views');     // تعیین پوشه views برای فایل‌های HTML
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+// روت برای نمایش داده‌های کاربران
+app.get('/', async (req, res) => {
+    try {
+        // گرفتن همه کاربران از کالکشن users
+        const users = await UserModel.find();
+        res.render('index', { users });  // ارسال داده‌ها به صفحه index.ejs
+    } catch (err) {
+        res.status(500).send('Error retrieving users');
+    }
 });
 
-
-app.get('/userdb', async (req, res) => {
-    try {
-        const users = await UserModel.find();
-        res.json(users);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching data from database', error: err });
-    }
+// راه‌اندازی سرور
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
 });
