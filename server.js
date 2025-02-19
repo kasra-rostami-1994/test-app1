@@ -12,6 +12,12 @@ mongoose.connect('mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/us
 });
 
 
+// مسیر روت اصلی
+app.get('/', (req, res) => {
+    res.send('Hello, World!'); // یا می‌توانید فایل HTML یا یک صفحه دیگر ارسال کنید
+});
+
+
  const   UserSchema = new mongoose.Schema({
 
      name:String,
@@ -20,7 +26,7 @@ mongoose.connect('mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/us
 
  const UserModel = mongoose.model("emp", UserSchema);
 
-app.listen (3001, ()=>{
+app.listen (80, ()=>{
     console.log('server is running.')
 })
 
