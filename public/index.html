@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>فرم ذخیره داده‌ها</title>
+</head>
+<body>
+  <h1>فرم ارسال داده</h1>
+  <form id="data-form">
+    <label for="name">نام:</label>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="message">پیام:</label>
+    <textarea id="message" name="message" required></textarea><br><br>
+
+    <button type="submit">ارسال</button>
+  </form>
+
+  <h2>داده‌های ذخیره‌شده:</h2>
+  <ul id="data-list"></ul>
+
+  <script src="/script.js"></script>
+</body>
+</html>
