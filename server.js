@@ -39,8 +39,6 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
-const cors = require('cors');
-app.use(cors());
 
 app.get('/check-db-connection', (req, res) => {
     console.log('Received request to check DB connection');
