@@ -8,6 +8,7 @@ const port = process.env.PORT || 3000;
 // برای سرو کردن فایل‌های استاتیک
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 // اتصال به MongoDB
 const dbURI = process.env.DB_URI || 'mongodb+srv://<username>:<password>@cluster0.o5y10.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
@@ -19,12 +20,13 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // مسیر برای بررسی اتصال به دیتابیس
 app.get('/check-db-connection', (req, res) => {
-  if (mongoose.connection.readyState === 1) {
-    res.json({ status: 'success' });
-  } else {
-    res.json({ status: 'error' });
-  }
-});
+    if (mongoose.connection.readyState === 1) {
+      res.json({ status: 'success' });
+    } else {
+      res.json({ status: 'error' });
+    }
+  });
+  
 
 // مسیر برای نمایش فایل HTML
 app.get('/', (req, res) => {
@@ -34,3 +36,5 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
+
+
