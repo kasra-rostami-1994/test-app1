@@ -1,34 +1,58 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+const path = require('path');
 const cors = require('cors');
+const bodyParser = require('body-parser');
+
 const app = express();
 const port = process.env.PORT || 3000;
-
-// بارگذاری متغیرهای محیطی
-dotenv.config();
 
 // استفاده از CORS
 app.use(cors());
 
-// استفاده از JSON در درخواست‌ها
-app.use(express.json());
+// استفاده از bodyParser برای پردازش داده‌های POST
+app.use(bodyParser.json());
 
-// اتصال به MongoDB (با استفاده از URL دیتابیس شما)
-const dbURI = process.env.MONGO_URI || 'mongodb://mongo:xHiAnMkKTnPWFWQWJrDMjMHMHNvBqfQK@nozomi.proxy.rlwy.net:34049';
+// سرو کردن فایل‌های استاتیک از پوشه public
+app.use(express.static(path.join(__dirname, 'public')));
 
-// اتصال به دیتابیس MongoDB
+// اتصال به MongoDB
+const dbURI = process.env.DB_URI || 'mongodb://mongo:xHiAnMkKTnPWFWQWJrDMjMHMHNvBqfQK@nozomi.proxy.rlwy.net:34049';
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => {
     console.error('Error connecting to MongoDB:', err);
   });
 
-// مدل کاربر
+// مدل برای ذخیره کاربر
 const User = mongoose.model('User', new mongoose.Schema({
-  name: String,
-  email: String,
+  name: { type: String, required: true },
+  email: { type: String, required: true }
 }));
+
+// مسیر برای ذخیره‌سازی کاربر در دیتابیس
+app.post('/save-user', async (req, res) => {
+  const { name, email } = req.body;
+  try {
+    const user = new User({ name, email });
+    await user.save();
+    res.status(200).json({ message: 'User saved successfully!' });
+  } catch (error) {
+    console.error('Error saving user:', error);
+    res.status(500).json({ message: 'Error saving user.' });
+  }
+});
+
+// مسیر برای نمایش کاربران
+app.get('/users', async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ message: 'Error fetching users.' });
+  }
+});
 
 // بررسی اتصال به دیتابیس
 app.get('/check-db-connection', (req, res) => {
@@ -39,36 +63,6 @@ app.get('/check-db-connection', (req, res) => {
   }
 });
 
-// ذخیره‌سازی اطلاعات کاربر
-app.post('/save-user', (req, res) => {
-  const { name, email } = req.body;
-  const newUser = new User({ name, email });
-
-  newUser.save()
-    .then(() => {
-      console.log('User saved successfully');
-      res.status(200).json({ message: 'User saved' });
-    })
-    .catch((err) => {
-      console.error('Failed to save user:', err);
-      res.status(500).json({ error: 'Failed to save user' });
-    });
-});
-
-// دریافت اطلاعات کاربران
-app.get('/users', (req, res) => {
-  User.find()
-    .then((users) => {
-      console.log('Users fetched successfully:', users);
-      res.json(users);
-    })
-    .catch((err) => {
-      console.error('Failed to fetch users:', err);
-      res.status(500).json({ error: 'Failed to fetch users' });
-    });
-});
-
-// سرور شروع به کار می‌کند
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
