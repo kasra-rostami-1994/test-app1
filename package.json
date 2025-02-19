@@ -52,11 +52,11 @@
     "mongoose": "^8.10.1"
   },
   "script":{
-    
-  }
-  "scripts": {
+       "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
+
+  }
+  
   
   "repository": {
     "type": "git",
