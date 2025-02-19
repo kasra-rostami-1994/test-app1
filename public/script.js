@@ -4,7 +4,7 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
   const name = document.getElementById('name').value;
   const email = document.getElementById('email').value;
 
-  fetch('/save-user', {
+  fetch('https://www.kasrarostami.ir/save-user', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email })
@@ -15,19 +15,19 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
     loadUsers();  // Reload the users list after saving
   })
   .catch(error => console.error('Error:', error));
-});
-
-function loadUsers() {
-  fetch('/users')
-    .then(response => response.json())
-    .then(data => {
-      const usersList = document.getElementById('usersList');
-      usersList.innerHTML = '';  // Clear the existing list
-      data.forEach(user => {
-        usersList.innerHTML += `<p>${user.name} - ${user.email}</p>`;
-      });
-    })
-    .catch(error => console.error('Error:', error));
-}
+  
+  function loadUsers() {
+    fetch('https://www.kasrarostami.ir/users')
+      .then(response => response.json())
+      .then(data => {
+        const usersList = document.getElementById('usersList');
+        usersList.innerHTML = '';  // Clear the existing list
+        data.forEach(user => {
+          usersList.innerHTML += `<p>${user.name} - ${user.email}</p>`;
+        });
+      })
+      .catch(error => console.error('Error:', error));
+  }
+  
 
 loadUsers();  // Load users initially
