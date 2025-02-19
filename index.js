@@ -1,12 +1,13 @@
 const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // MongoDB URI and database connection
-const uri = "mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/";
+const uri = process.env.DB_URI || "mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/";
 const dbName = "userDatabase";
 let db;
 
@@ -44,11 +45,12 @@ app.get('/', async (req, res) => {
     users.forEach(user => {
       html += `
         <hr>
-        <li>Name: ${user.name}<br>Email: ${user.email}
-          <form action="/delete/${user._id}" method="POST" style="display:inline;">
+        <li>
+          Name: ${user.name}<br>Email: ${user.email}
+          <form action="/delete/${user._id}" method="POST">
             <button type="submit">Delete</button>
           </form>
-          <form action="/edit/${user._id}" method="GET" style="display:inline;">
+          <form action="/edit/${user._id}" method="GET">
             <button type="submit">Edit</button>
           </form>
         </li>
@@ -85,17 +87,10 @@ app.post('/submit', async (req, res) => {
 
 // حذف کاربر
 app.post('/delete/:id', async (req, res) => {
-  const userId = req.params.id;
+  const { id } = req.params;
 
   try {
-    // تبدیل شناسه به ObjectId
-    const result = await db.collection('users').deleteOne({ _id: new ObjectId(userId) });
-
-    if (result.deletedCount === 0) {
-      return res.status(404).send('User not found');
-    }
-
-    // پس از حذف، به صفحه اصلی برگشت
+    await db.collection('users').deleteOne({ _id: new ObjectId(id) });
     res.redirect('/');
   } catch (error) {
     console.error('Error deleting user:', error);
@@ -103,52 +98,41 @@ app.post('/delete/:id', async (req, res) => {
   }
 });
 
-// ویرایش کاربر (اختیاری)
+// ویرایش کاربر (GET)
 app.get('/edit/:id', async (req, res) => {
-  const userId = req.params.id;
+  const { id } = req.params;
 
   try {
-    const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
-
-    if (!user) {
-      return res.status(404).send('User not found');
+    const user = await db.collection('users').findOne({ _id: new ObjectId(id) });
+    if (user) {
+      res.send(`
+        <form action="/edit/${id}" method="POST">
+          <label for="name">Name:</label><br>
+          <input type="text" id="name" name="name" value="${user.name}" required><br><br>
+          <label for="email">Email:</label><br>
+          <input type="email" id="email" name="email" value="${user.email}" required><br><br>
+          <input type="submit" value="Update">
+        </form>
+      `);
+    } else {
+      res.status(404).send('User not found');
     }
-
-    let html = `
-      <form action="/update/${user._id}" method="POST">
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name" value="${user.name}" required><br><br>
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" value="${user.email}" required><br><br>
-        <input type="submit" value="Update">
-      </form>
-    `;
-    res.send(html);
   } catch (error) {
-    console.error('Error fetching user for editing:', error);
+    console.error('Error retrieving user for editing:', error);
     res.status(500).send('Internal Server Error');
   }
 });
 
-// به‌روزرسانی کاربر (اختیاری)
-app.post('/update/:id', async (req, res) => {
-  const userId = req.params.id;
+// ویرایش کاربر (POST)
+app.post('/edit/:id', async (req, res) => {
+  const { id } = req.params;
   const { name, email } = req.body;
 
-  if (!name || !email) {
-    return res.status(400).send('Name and Email are required!');
-  }
-
   try {
-    const result = await db.collection('users').updateOne(
-      { _id: new ObjectId(userId) },
+    await db.collection('users').updateOne(
+      { _id: new ObjectId(id) },
       { $set: { name, email } }
     );
-
-    if (result.modifiedCount === 0) {
-      return res.status(404).send('User not found or no changes made');
-    }
-
     res.redirect('/');
   } catch (error) {
     console.error('Error updating user:', error);
@@ -156,7 +140,6 @@ app.post('/update/:id', async (req, res) => {
   }
 });
 
-// شروع سرور
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
