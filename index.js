@@ -43,7 +43,7 @@ app.get('/', async (req, res) => {
 
     // نمایش کاربران قبلی
     users.forEach(user => {
-      html += `<li>Name: ${user.name},<br>, Email: ${user.email}</li>`;
+      html += `<li>Name: ${user.name}<br>Email: ${user.email}</li>`;
     });
 
     html += '</ul>';
