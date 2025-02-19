@@ -5,11 +5,12 @@ document.getElementById('data-form').addEventListener('submit', async (e) => {
   const name = document.getElementById('name').value;
   const message = document.getElementById('message').value;
 
-  const response = await fetch('/submit-data', {
+  const response = await fetch('https://www.kasrarostami.ir/submit-data', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, message })
   });
+  
 
   const data = await response.json();
   if (data.message === 'Data saved successfully') {
