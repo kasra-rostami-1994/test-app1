@@ -1,7 +1,6 @@
 {
   "name": "test-app1",
   "version": "1.0.0",
-  "description": "just testing deployment",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -17,6 +16,7 @@
     "url": "https://github.com/kasra-rostami-1994/test-app1/issues"
   },
   "homepage": "https://github.com/kasra-rostami-1994/test-app1#readme",
+  "description": "",
   "dependencies": {
     "express": "^4.21.2",
     "mongoose": "^8.10.1"

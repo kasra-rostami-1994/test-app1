@@ -1,5 +1,4 @@
-fetch('/api/check-db-connection')
-
+fetch('/check-db-connection')
   .then(response => response.json())
   .then(data => {
     const messageElement = document.getElementById('message');
@@ -16,5 +15,3 @@ fetch('/api/check-db-connection')
     messageElement.innerText = 'خطا در برقراری ارتباط!';
     messageElement.style.color = 'red';
   });
-
-  
