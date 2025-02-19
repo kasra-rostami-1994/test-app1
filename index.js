@@ -24,7 +24,7 @@ const UserModel = mongoose.model('User', UserSchema);
 
 // تنظیمات نمایش داده‌ها در صفحه
 app.set('view engine', 'ejs');  // استفاده از موتور نمایش ejs
-app.set('views', './views');     // تعیین پوشه views برای فایل‌های HTML
+app.set('views', '');  // مسیر اصلی
 
 // روت برای نمایش داده‌های کاربران
 app.get('/', async (req, res) => {
