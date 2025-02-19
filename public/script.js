@@ -1,40 +1,33 @@
-// ارسال داده‌ها به سرور
-document.getElementById('data-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
+document.getElementById('userForm').addEventListener('submit', function(event) {
+  event.preventDefault();
 
   const name = document.getElementById('name').value;
-  const message = document.getElementById('message').value;
+  const email = document.getElementById('email').value;
 
-  const response = await fetch('https://www.kasrarostami.ir/submit-data', {
+  fetch('/save-user', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, message })
-  });
-  
-
-  const data = await response.json();
-  if (data.message === 'Data saved successfully') {
-    alert('داده با موفقیت ذخیره شد');
-    loadData(); // نمایش داده‌ها پس از ذخیره شدن
-  } else {
-    alert('خطا در ذخیره داده‌ها');
-  }
+    body: JSON.stringify({ name, email })
+  })
+  .then(response => response.text())
+  .then(data => {
+    console.log(data);
+    loadUsers();  // Reload the users list after saving
+  })
+  .catch(error => console.error('Error:', error));
 });
 
-// دریافت داده‌ها از دیتابیس و نمایش آن‌ها
-async function loadData() {
-  const response = await fetch('/get-data');
-  const data = await response.json();
-
-  const dataList = document.getElementById('data-list');
-  dataList.innerHTML = ''; // پاک کردن داده‌های قبلی
-
-  data.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = `${item.name}: ${item.message}`;
-    dataList.appendChild(li);
-  });
+function loadUsers() {
+  fetch('/users')
+    .then(response => response.json())
+    .then(data => {
+      const usersList = document.getElementById('usersList');
+      usersList.innerHTML = '';  // Clear the existing list
+      data.forEach(user => {
+        usersList.innerHTML += `<p>${user.name} - ${user.email}</p>`;
+      });
+    })
+    .catch(error => console.error('Error:', error));
 }
 
-// بارگذاری داده‌ها در ابتدای صفحه
-loadData();
+loadUsers();  // Load users initially

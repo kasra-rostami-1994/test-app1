@@ -1,82 +1,74 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const path = require('path');
-const Data = require('./models/Data'); // مدل داده
 
+// راه‌اندازی اپلیکیشن Express
 const app = express();
 const port = process.env.PORT || 3000;
 
-
-// وارد کردن پکیج‌ها
-const express = require('express');
-const cors = require('cors');
-const app = express();
-
-// استفاده از cors برای اجازه دادن به درخواست‌ها از منابع مختلف
+// استفاده از CORS برای رفع مشکلات دسترسی از منابع مختلف
 app.use(cors());
 
-// سایر middlewareها و روت‌ها
-app.use(express.json());  // برای پردازش JSON
-app.get('/', (req, res) => {
-    res.send('Hello World');
-});
-
-// سرور را روی پورت مشخص شده شروع می‌کنیم
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
-
-
-
-// استفاده از express.json برای پردازش درخواست‌های JSON
+// برای پردازش داده‌های JSON در بدن درخواست‌ها
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// اتصال به MongoDB
-const dbURI = process.env.DB_URI || 'mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+// اتصال به دیتابیس MongoDB از طریق URL که در ورسل تنظیم شده است
+const dbURI = process.env.MONGO_URL || 'mongodb://mongo:xHiAnMkKTnPWFWQWJrDMjMHMHNvBqfQK@nozomi.proxy.rlwy.net:34049';
+
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('Error connecting to MongoDB:', err));
+  .then(() => console.log('Connected to MongoDB on Railway'))
+  .catch((error) => console.error('Error connecting to MongoDB:', error));
 
-// ذخیره داده‌ها در MongoDB
-app.post('/submit-data', async (req, res) => {
-  const { name, message } = req.body;
-  
-  try {
-    const newData = new Data({ name, message });
-    await newData.save();
-    res.status(200).send({ message: 'Data saved successfully' });
-  } catch (error) {
-    res.status(500).send({ message: 'Failed to save data', error });
+// تعریف مدل برای داده‌های کاربران
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+});
+
+const User = mongoose.model('User', userSchema);
+
+// مسیر برای ذخیره اطلاعات کاربر
+app.post('/save-user', (req, res) => {
+  const { name, email } = req.body;
+
+  const newUser = new User({ name, email });
+
+  newUser.save()
+    .then(() => {
+      res.status(200).send('User saved successfully');
+    })
+    .catch((error) => {
+      res.status(500).send('Error saving user');
+      console.error('Error saving user:', error);
+    });
+});
+
+// مسیر برای دریافت اطلاعات کاربران
+app.get('/users', (req, res) => {
+  User.find()
+    .then((users) => {
+      res.json(users);
+    })
+    .catch((error) => {
+      res.status(500).send('Error retrieving users');
+      console.error('Error retrieving users:', error);
+    });
+});
+
+// مسیر برای بررسی اتصال به دیتابیس
+app.get('/check-db-connection', (req, res) => {
+  if (mongoose.connection.readyState === 1) {
+    res.json({ status: 'success' });
+  } else {
+    res.json({ status: 'error' });
   }
 });
 
-// دریافت داده‌های ذخیره‌شده از MongoDB
-app.get('/get-data', async (req, res) => {
-  try {
-    const data = await Data.find();
-    res.json(data);
-  } catch (error) {
-    res.status(500).send({ message: 'Failed to retrieve data', error });
-  }
-});
+// سرو کردن فایل‌های استاتیک (HTML، JS، CSS و ...)
+app.use(express.static(path.join(__dirname)));
 
-// مسیر برای نمایش فایل HTML
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
+// شروع سرور
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
-
-// const cors = require('cors');
-
-// // استفاده از CORS
-// app.use(cors({
-//   origin: 'https://www.kasrarostami.ir', // آدرس سایت اصلی شما
-//   methods: ['GET', 'POST'],
-//   allowedHeaders: ['Content-Type']
-// }));
