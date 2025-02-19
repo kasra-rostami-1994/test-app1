@@ -1,4 +1,5 @@
-fetch('https://www.kasrarostami.ir/check-db-connection')
+fetch('/api/check-db-connection')
+
   .then(response => response.json())
   .then(data => {
     const messageElement = document.getElementById('message');
@@ -15,3 +16,5 @@ fetch('https://www.kasrarostami.ir/check-db-connection')
     messageElement.innerText = 'خطا در برقراری ارتباط!';
     messageElement.style.color = 'red';
   });
+
+  
