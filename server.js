@@ -10,7 +10,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // اتصال به MongoDB
-const dbURI = process.env.DB_URI || 'mongodb+srv://<username>:<password>@cluster0.o5y10.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const dbURI = 'mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/?retryWrites=true&w=majority';
+
 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
