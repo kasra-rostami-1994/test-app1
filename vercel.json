@@ -18,17 +18,17 @@
         "dest": "/index.js"
       },
       {
-        "src": "/delete/:id",
+        "src": "/delete/(.*)",
         "methods": ["POST"],
         "dest": "/index.js"
       },
       {
-        "src": "/edit/:id",
+        "src": "/edit/(.*)",
         "methods": ["GET"],
         "dest": "/index.js"
       },
       {
-        "src": "/edit/:id",
+        "src": "/edit/(.*)",
         "methods": ["POST"],
         "dest": "/index.js"
       }
