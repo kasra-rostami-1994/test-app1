@@ -28,6 +28,7 @@ app.get('/check-db-connection', (req, res) => {
     }
   });
   
+  
 
 // مسیر برای نمایش فایل HTML
 app.get('/', (req, res) => {
@@ -38,4 +39,17 @@ app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
 
+const cors = require('cors');
+app.use(cors());
 
+app.get('/check-db-connection', (req, res) => {
+    console.log('Received request to check DB connection');
+    if (mongoose.connection.readyState === 1) {
+      console.log('DB connection is successful');
+      res.json({ status: 'success' });
+    } else {
+      console.log('DB connection failed');
+      res.json({ status: 'error' });
+    }
+  });
+  
