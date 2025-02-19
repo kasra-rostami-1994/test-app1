@@ -3,20 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ثبت کاربر</title>
+  <title>فرم ذخیره کاربر</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    input {
+      margin-bottom: 10px;
+      padding: 8px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #usersList {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h1>ثبت اطلاعات کاربر</h1>
-  
-  <form id="userForm">
-    <input type="text" id="name" placeholder="نام خود را وارد کنید" required />
-    <input type="email" id="email" placeholder="ایمیل خود را وارد کنید" required />
-    <button type="submit">ثبت</button>
-  </form>
 
-  <h2>لیست کاربران</h2>
-  <div id="usersList"></div>
+  <div class="container">
+    <h1>فرم ذخیره‌سازی کاربر</h1>
 
-  <script src="script.js"></script>
+    <form id="userForm">
+      <input type="text" id="name" placeholder="نام" required />
+      <input type="email" id="email" placeholder="ایمیل" required />
+      <button type="submit">ذخیره کاربر</button>
+    </form>
+
+    <h2>لیست کاربران</h2>
+    <div id="usersList"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/3.6.2/fetch.min.js"></script>
+  <script src="https://www.kasrarostami.ir/js/script.js"></script> <!-- مسیر فایل جاوااسکریپت شما -->
+
 </body>
 </html>
