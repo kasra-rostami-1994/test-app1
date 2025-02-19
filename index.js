@@ -2,6 +2,11 @@ const express = require('express')
 const mongoose = require('mongoose')
 const app = express()
 
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+  }); 
+
+  
 mongoose.connect('mongodb+srv://rkasra18:920771018@cluster0.o5y10.mongodb.net/userdb')
 
 
