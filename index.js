@@ -1,70 +1,76 @@
-// server.js
 const express = require('express');
-const xlsx = require('xlsx');
 const bodyParser = require('body-parser');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+// تنظیمات bodyParser برای پردازش داده‌های فرم
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // مسیر برای نمایش فرم
 app.get('/', (req, res) => {
-  // بارگذاری اطلاعات از فایل اکسل
-  const users = readExcelData();
+  // خواندن داده‌ها از فایل متنی
+  const users = readUsersFromFile();
+  
   let html = `
     <form action="/submit" method="POST">
       <label for="name">Name:</label><br>
-      <input type="text" id="name" name="name"><br><br>
+      <input type="text" id="name" name="name" required><br><br>
       <label for="email">Email:</label><br>
-      <input type="email" id="email" name="email"><br><br>
+      <input type="email" id="email" name="email" required><br><br>
       <input type="submit" value="Submit">
     </form>
     <h3>Previous Users:</h3>
     <ul>
   `;
+  
+  // نمایش کاربران قبلی از فایل
   users.forEach(user => {
     html += `<li>Name: ${user.name}, Email: ${user.email}</li>`;
   });
+  
   html += '</ul>';
   res.send(html);
 });
 
-// مسیر برای دریافت داده‌های فرم و ذخیره در فایل اکسل
+// مسیر برای دریافت داده‌های فرم و ذخیره در فایل متنی
 app.post('/submit', (req, res) => {
   const { name, email } = req.body;
-  
-  // ذخیره اطلاعات جدید در فایل اکسل
-  const users = readExcelData();
+
+  // ذخیره اطلاعات جدید در فایل متنی
+  const users = readUsersFromFile();
   users.push({ name, email });
-  
-  writeExcelData(users);
-  
+
+  writeUsersToFile(users);
+
+  // پس از ذخیره، به صفحه اصلی برگشت
   res.redirect('/');
 });
 
-// خواندن داده‌ها از فایل اکسل
-function readExcelData() {
-  const filePath = './users.xlsx';
+// خواندن داده‌ها از فایل نوت‌متنی
+function readUsersFromFile() {
+  const filePath = path.join(__dirname, 'users.txt');
   let users = [];
-  
+
   if (fs.existsSync(filePath)) {
-    const workbook = xlsx.readFile(filePath);
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    users = xlsx.utils.sheet_to_json(sheet);
+    const data = fs.readFileSync(filePath, 'utf-8');
+    users = data.split('\n').filter(Boolean).map(line => {
+      const [name, email] = line.split(',');
+      return { name, email };
+    });
   }
-  
+
   return users;
 }
 
-// نوشتن داده‌ها به فایل اکسل
-function writeExcelData(users) {
-  const ws = xlsx.utils.json_to_sheet(users);
-  const wb = xlsx.utils.book_new();
-  xlsx.utils.book_append_sheet(wb, ws, 'Users');
-  xlsx.writeFile(wb, './users.xlsx');
+// نوشتن داده‌ها به فایل نوت‌متنی
+function writeUsersToFile(users) {
+  const filePath = path.join(__dirname, 'users.txt');
+  const data = users.map(user => `${user.name},${user.email}`).join('\n');
+  fs.writeFileSync(filePath, data, 'utf-8');
 }
 
 app.listen(port, () => {
