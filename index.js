@@ -41,3 +41,15 @@ app.get('/', async (req, res) => {
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
 });
+
+
+app.get('/', async (req, res) => {
+    try {
+        // گرفتن همه کاربران از کالکشن users
+        const users = await UserModel.find();
+        res.render('index', { users });
+    } catch (err) {
+        console.error("Error fetching users:", err);  // لاگ خطا در سرور
+        res.status(500).send('Error retrieving users');
+    }
+});
