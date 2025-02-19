@@ -16,21 +16,6 @@
         "src": "/",
         "methods": ["GET"],
         "dest": "/index.js"
-      },
-      {
-        "src": "/delete/:id",
-        "methods": ["POST"],
-        "dest": "/index.js"
-      },
-      {
-        "src": "/edit/:id",
-        "methods": ["GET"],
-        "dest": "/index.js"
-      },
-      {
-        "src": "/edit/:id",
-        "methods": ["POST"],
-        "dest": "/index.js"
       }
     ]
   }
