@@ -30,7 +30,7 @@ app.get('/', async (req, res) => {
     // خواندن اطلاعات کاربران از دیتابیس
     const users = await db.collection('users').find().toArray();
     let html = `
-      <a href="/zohoverify/verifyforzoho.html">verify</a>
+      <a href="/public/zohoverify/verifyforzoho.html">verify</a>
       <form action="/submit" method="POST">
         <label for="name">Name:</label><br>
         <input type="text" id="name" name="name" required><br><br>
