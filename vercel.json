@@ -32,6 +32,7 @@
         "methods": ["POST"],
         "dest": "/index.js"
       }
+      
     ]
   }
   
